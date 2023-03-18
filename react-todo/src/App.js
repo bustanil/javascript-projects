@@ -1,20 +1,19 @@
 import { useEffect, useState } from 'react';
-import './App.css';
 
 function App() {
 
   return (
-    <div className="App">
       <TodoList />
-    </div>
   );
+
 }
 
 function TodoList() {
   const [todos, setTodos] = useState([]);
+  const [title, setTitle] = useState("");
 
   useEffect(() => {
-    console.log('useeffect called');
+    // set initial to do items
     setTodos([
       {title: "My task", done: false},
       {title: "My task 2", done: true},
@@ -23,7 +22,7 @@ function TodoList() {
   }, []);
 
   function removeTodoItem(index) {
-    setTodos(todos => todos.filter((todo, i) => i !== index));
+    setTodos(todos => todos.filter((_, i) => i !== index));
   }
 
   function toggleDone(index){
@@ -38,9 +37,26 @@ function TodoList() {
     );
   }
 
+  function titleChanged(e) {
+    setTitle(e.target.value);
+  }
+
+  function addTodoItem() {
+    if(title === "") {
+      alert("Title cannot be empty");
+      return;
+    }
+
+    setTodos(todos => [...todos, {
+      title: title,
+      done: false,
+    }]);
+
+    setTitle("");
+  }
+
   return (
     <div>
-    <ul>
         {todos.map((todo, index) => 
           <TodoItem 
             key={index}
@@ -49,19 +65,19 @@ function TodoList() {
             done={todo.done} 
             onRemoveClicked={removeTodoItem} 
             onCheckboxClicked={toggleDone} />)}
-    </ul>
+        <input type="text" value={title} onChange={titleChanged} />
+        <button onClick={addTodoItem}>Add</button>
     </div>
   )
 }
 
 function TodoItem({title, done, index, onRemoveClicked, onCheckboxClicked}) {
   return (
-    <li><div>
-      <input type="checkbox" defaultChecked={done} onClick={() => onCheckboxClicked(index)}/> :
-      {title}
-      <span>{done + ""}</span>
-      <button onClick={() => onRemoveClicked(index)}>remove</button>
-    </div></li>
+      <div>
+        <input type="checkbox" defaultChecked={done} onClick={() => onCheckboxClicked(index)}/> :
+        <span style={{textDecoration: (done ? "line-through" : "none")}}>{title}</span>
+        <button onClick={() => onRemoveClicked(index)}>remove</button>
+      </div>
   )
 }
 
